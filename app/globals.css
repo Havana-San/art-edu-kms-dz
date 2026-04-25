@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    direction: rtl;
+    font-family: 'Cairo', sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased;
+    font-family: 'Cairo', sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-600 rounded-full;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-bold
+           py-3 px-6 rounded-xl transition-all duration-200
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-800 hover:bg-slate-700 text-white font-bold
+           py-3 px-6 rounded-xl transition-all duration-200
+           border border-slate-700 active:scale-95;
+  }
+
+  .btn-gold {
+    @apply bg-gold-500 hover:bg-gold-600 text-slate-900 font-bold
+           py-3 px-6 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  .card {
+    @apply bg-slate-900 border border-slate-800 rounded-2xl p-6
+           hover:border-primary-600/50 transition-all duration-200;
+  }
+
+  .input {
+    @apply w-full bg-slate-800 border border-slate-700 rounded-xl
+           px-4 py-3 text-slate-100 placeholder-slate-400
+           focus:outline-none focus:border-primary-500 focus:ring-2
+           focus:ring-primary-500/20 transition-all duration-200
+           font-cairo text-right;
+  }
+
+  .label {
+    @apply block text-sm font-semibold text-slate-300 mb-2 text-right;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold;
+  }
+
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-title {
+    @apply text-3xl font-black text-white mb-2;
+  }
+
+  .section-sub {
+    @apply text-slate-400 text-lg mb-8;
+  }
+
+  .glass {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-l from-primary-400 to-gold-400
+           bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .font-cairo {
+    font-family: 'Cairo', sans-serif;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease both;
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
