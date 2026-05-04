@@ -13,7 +13,7 @@ interface Course {
   created_at: string;
 }
 
-const LEVELS = ['الكل', 'السنة 1', 'السنة 2', 'السنة 3', 'السنة 4'];
+const LEVELS = ['الكل', '1AM', '2AM', '3AM', '4AM'];
 
 const LEVEL_COLOR: Record<string, string> = {
   '1AM': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
