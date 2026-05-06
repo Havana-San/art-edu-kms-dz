@@ -51,27 +51,6 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-950 overflow-x-hidden">
 
-      {/* ── NAVBAR ── */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
-        <div className="page-container flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-gold-500 flex items-center justify-center">
-              <Palette size={18} className="text-white" />
-            </div>
-            <span className="font-black text-lg gradient-text">Art Edu DZ</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="btn-secondary py-2 px-4 text-sm">
-              تسجيل الدخول
-            </Link>
-            <Link href="/register" className="btn-primary py-2 px-4 text-sm">
-              ابدأ مجاناً
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* ── HERO ── */}
       <section className="pt-32 pb-24 px-4 relative">
         {/* Background glow */}

@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Palette, BookOpen, Users, Plus,
-  LogOut, User, Edit, Eye,
-  TrendingUp, Award
+  BookOpen, Users, Plus,
+  Edit, Eye
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -27,7 +26,7 @@ export default function TeacherDashboard() {
       const { data: prof } = await supabase
         .from('profiles').select('*').eq('id', user.id).single();
 
-      if (prof?.role !== 'teacher') { router.push('/dashboard/student'); return; }
+      if (!prof || prof?.role !== 'teacher') { router.push('/dashboard/student'); return; }
       setProfile(prof);
 
       const { data: crs } = await supabase
@@ -38,11 +37,6 @@ export default function TeacherDashboard() {
     };
     init();
   }, [router]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
 
   if (loading) {
     return (
@@ -56,10 +50,10 @@ export default function TeacherDashboard() {
   const unpublished = courses.filter(c => !c.is_published).length;
 
   const STATS = [
-    { icon: BookOpen,   label: 'إجمالي الكورسات', value: courses.length, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
-    { icon: Eye,        label: 'منشورة',            value: published,      color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-    { icon: Edit,       label: 'مسوّدات',           value: unpublished,    color: 'text-amber-400',   bg: 'bg-amber-500/10'  },
-    { icon: Users,      label: 'الطلاب',            value: '—',            color: 'text-rose-400',    bg: 'bg-rose-500/10'   },
+    { icon: BookOpen, label: 'إجمالي الكورسات', value: courses.length, color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
+    { icon: Eye,      label: 'منشورة',            value: published,      color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+    { icon: Edit,     label: 'مسوّدات',           value: unpublished,    color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
+    { icon: Users,    label: 'الطلاب',            value: '—',            color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
   ];
 
   const LEVEL_COLOR: Record<string, string> = {
@@ -71,36 +65,6 @@ export default function TeacherDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-
-      {/* NAVBAR */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center">
-              <Palette size={16} className="text-white" />
-            </div>
-            <span className="font-amiri font-bold text-base bg-gradient-to-l from-indigo-400 to-amber-400 bg-clip-text text-transparent">
-              Art Edu KMS DZ
-            </span>
-            <span className="hidden sm:block text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">
-              لوحة الأستاذ
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-slate-300 text-sm">
-              <div className="w-7 h-7 rounded-full bg-amber-600 flex items-center justify-center">
-                <User size={14} className="text-white" />
-              </div>
-              <span className="hidden sm:block">{profile?.name}</span>
-            </div>
-            <button onClick={handleLogout} className="flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors text-sm">
-              <LogOut size={16} />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* CONTENT */}
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
 

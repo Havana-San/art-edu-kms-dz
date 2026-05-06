@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
-  Palette, User, Mail, Shield,
-  Save, ArrowRight, CheckCircle
+  User, Mail, Shield,
+  Save, CheckCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -55,9 +54,6 @@ export default function ProfilePage() {
     </div>
   );
 
-  const dashHref = profile?.role === 'teacher'
-    ? '/dashboard/teacher' : '/dashboard/student';
-
   const roleLabel  = profile?.role === 'teacher' ? 'أستاذ' : 'طالب';
   const roleColor  = profile?.role === 'teacher'
     ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
@@ -65,25 +61,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-
-      {/* NAVBAR */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center">
-              <Palette size={16} className="text-white" />
-            </div>
-            <span className="font-amiri font-bold text-base bg-gradient-to-l from-indigo-400 to-amber-400 bg-clip-text text-transparent">
-              Art Edu KMS DZ
-            </span>
-          </Link>
-          <Link href={dashHref}
-            className="flex items-center gap-1 text-slate-400 hover:text-slate-200 text-sm transition-colors">
-            <ArrowRight size={16} /> لوحتي
-          </Link>
-        </div>
-      </nav>
-
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-xl mx-auto">
 
@@ -120,7 +97,6 @@ export default function ProfilePage() {
             )}
 
             <form onSubmit={handleSave} className="space-y-5">
-              {/* Name */}
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2 text-right">
                   الاسم الكامل
@@ -137,7 +113,6 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Email (read only) */}
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2 text-right">
                   البريد الإلكتروني
@@ -154,7 +129,6 @@ export default function ProfilePage() {
                 <p className="text-slate-500 text-xs mt-1 text-right">لا يمكن تغيير البريد الإلكتروني</p>
               </div>
 
-              {/* Role (read only) */}
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2 text-right">
                   نوع الحساب
@@ -183,7 +157,6 @@ export default function ProfilePage() {
             </form>
           </div>
 
-          {/* Join date */}
           {profile?.created_at && (
             <p className="text-center text-slate-500 text-xs">
               انضممت في {new Date(profile.created_at).toLocaleDateString('ar-DZ', {

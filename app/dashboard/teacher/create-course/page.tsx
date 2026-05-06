@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Palette, ArrowRight, BookOpen, Save, Eye } from 'lucide-react';
+import { BookOpen, Save } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 const LEVELS = ['1AM', '2AM', '3AM', '4AM'];
@@ -45,29 +45,6 @@ export default function CreateCoursePage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-
-      {/* NAVBAR */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center">
-              <Palette size={16} className="text-white" />
-            </div>
-            <span className="font-amiri font-bold text-base bg-gradient-to-l from-indigo-400 to-amber-400 bg-clip-text text-transparent">
-              Art Edu KMS DZ
-            </span>
-          </div>
-          <Link
-            href="/dashboard/teacher"
-            className="flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-colors text-sm"
-          >
-            <ArrowRight size={16} />
-            العودة للوحة
-          </Link>
-        </div>
-      </nav>
-
-      {/* CONTENT */}
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-2xl mx-auto">
 
@@ -97,7 +74,6 @@ export default function CreateCoursePage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
 
-              {/* Title */}
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2 text-right">
                   عنوان الكورس <span className="text-red-400">*</span>
@@ -112,7 +88,6 @@ export default function CreateCoursePage() {
                 />
               </div>
 
-              {/* Description */}
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2 text-right">
                   وصف الكورس <span className="text-red-400">*</span>
@@ -127,7 +102,6 @@ export default function CreateCoursePage() {
                 />
               </div>
 
-              {/* Level */}
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-3 text-right">
                   المستوى الدراسي <span className="text-red-400">*</span>
@@ -150,7 +124,6 @@ export default function CreateCoursePage() {
                 </div>
               </div>
 
-              {/* Publish toggle */}
               <div className="flex items-center justify-between bg-slate-800 rounded-xl px-5 py-4 border border-slate-700">
                 <div>
                   <p className="text-slate-200 font-semibold text-sm">نشر الكورس فوراً</p>
@@ -171,7 +144,6 @@ export default function CreateCoursePage() {
                 </button>
               </div>
 
-              {/* Buttons */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"

@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Palette, ArrowRight, BookOpen, Play,
-  CheckCircle, Lock, Clock, ChevronLeft
+  Palette, BookOpen, Play,
+  CheckCircle, Lock, Clock
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -38,22 +38,18 @@ export default function CourseDetailPage() {
 
   useEffect(() => {
     const init = async () => {
-      // Get user
       const { data: { user } } = await supabase.auth.getUser();
       if (user) setUserId(user.id);
 
-      // Get course
       const { data: crs } = await supabase
         .from('courses').select('*').eq('id', id).single();
       if (!crs) { router.push('/courses'); return; }
       setCourse(crs);
 
-      // Get lessons
       const { data: lsn } = await supabase
         .from('lessons').select('*').eq('course_id', id).order('order');
       setLessons(lsn || []);
 
-      // Get progress if logged in
       if (user) {
         const { data: prg } = await supabase
           .from('progress')
@@ -83,25 +79,6 @@ export default function CourseDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-
-      {/* NAVBAR */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center">
-              <Palette size={16} className="text-white" />
-            </div>
-            <span className="font-amiri font-bold text-base bg-gradient-to-l from-indigo-400 to-amber-400 bg-clip-text text-transparent">
-              Art Edu KMS DZ
-            </span>
-          </Link>
-          <Link href="/courses" className="flex items-center gap-1 text-slate-400 hover:text-slate-200 text-sm transition-colors">
-            <ArrowRight size={16} />
-            الكورسات
-          </Link>
-        </div>
-      </nav>
-
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
 
@@ -115,7 +92,6 @@ export default function CourseDetailPage() {
             </h1>
             <p className="text-slate-400 leading-relaxed mb-6">{course.description}</p>
 
-            {/* Stats row */}
             <div className="flex items-center gap-6 text-sm text-slate-400 mb-6 flex-wrap">
               <div className="flex items-center gap-2">
                 <BookOpen size={16} className="text-indigo-400" />
@@ -129,7 +105,6 @@ export default function CourseDetailPage() {
               )}
             </div>
 
-            {/* Progress bar (only if logged in) */}
             {userId && lessons.length > 0 && (
               <div>
                 <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
@@ -158,7 +133,6 @@ export default function CourseDetailPage() {
             <div className="space-y-3">
               {lessons.map((lesson, idx) => {
                 const done = completedIds.has(lesson.id);
-                const isFirst = idx === 0;
                 const canAccess = userId !== null;
 
                 return (
@@ -168,24 +142,17 @@ export default function CourseDetailPage() {
                       done ? 'border-emerald-500/30' : 'border-slate-800 hover:border-indigo-600/40'
                     }`}
                   >
-                    {/* Number / check */}
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm ${
-                      done
-                        ? 'bg-emerald-500/10 text-emerald-400'
-                        : 'bg-slate-800 text-slate-400'
+                      done ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-400'
                     }`}>
                       {done ? <CheckCircle size={20} /> : idx + 1}
                     </div>
 
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-white font-semibold truncate">{lesson.title}</h3>
-                      {done && (
-                        <span className="text-emerald-400 text-xs">مكتمل ✓</span>
-                      )}
+                      {done && <span className="text-emerald-400 text-xs">مكتمل ✓</span>}
                     </div>
 
-                    {/* Action */}
                     {canAccess ? (
                       <Link
                         href={`/courses/${id}/lessons/${lesson.id}`}
@@ -213,7 +180,6 @@ export default function CourseDetailPage() {
             </div>
           )}
 
-          {/* CTA if not logged in */}
           {!userId && (
             <div className="mt-8 bg-indigo-600/10 border border-indigo-500/30 rounded-2xl p-6 text-center">
               <p className="text-white font-semibold mb-3">سجّل الآن للوصول لجميع الدروس</p>

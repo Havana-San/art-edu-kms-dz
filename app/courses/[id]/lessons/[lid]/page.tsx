@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
-  Palette, ArrowRight, CheckCircle, ChevronLeft,
-  ChevronRight, Play, FileText, HelpCircle
+  CheckCircle, Play, FileText, HelpCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -32,7 +30,6 @@ export default function LessonPage() {
   const [loading,     setLoading]     = useState(true);
   const [saving,      setSaving]      = useState(false);
 
-  // Quiz state
   const [current,    setCurrent]    = useState(0);
   const [selected,   setSelected]   = useState<string | null>(null);
   const [isCorrect,  setIsCorrect]  = useState<boolean | null>(null);
@@ -70,14 +67,12 @@ export default function LessonPage() {
   const markComplete = async () => {
     if (!userId || completed) return;
     setSaving(true);
-
     await supabase.from('progress').upsert({
       user_id:   userId,
       lesson_id: lid,
       completed: true,
       completed_at: new Date().toISOString(),
     });
-
     setCompleted(true);
     setSaving(false);
   };
@@ -118,28 +113,6 @@ export default function LessonPage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-
-      {/* NAVBAR */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center">
-              <Palette size={16} className="text-white" />
-            </div>
-            <span className="font-amiri font-bold text-base bg-gradient-to-l from-indigo-400 to-amber-400 bg-clip-text text-transparent">
-              Art Edu KMS DZ
-            </span>
-          </Link>
-          <Link
-            href={`/courses/${id}`}
-            className="flex items-center gap-1 text-slate-400 hover:text-slate-200 text-sm transition-colors"
-          >
-            <ArrowRight size={16} />
-            العودة للكورس
-          </Link>
-        </div>
-      </nav>
-
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-3xl mx-auto">
 
@@ -181,7 +154,6 @@ export default function LessonPage() {
           {/* ── CONTENT TAB ── */}
           {tab === 'content' && (
             <div className="space-y-6">
-              {/* Video */}
               {lesson.video_url && (
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                   <div className="aspect-video">
@@ -195,7 +167,6 @@ export default function LessonPage() {
                 </div>
               )}
 
-              {/* Text content */}
               {lesson.content && (
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
                   <h2 className="font-amiri text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -215,7 +186,6 @@ export default function LessonPage() {
                 </div>
               )}
 
-              {/* Complete button */}
               <button
                 onClick={markComplete}
                 disabled={completed || saving}
@@ -245,19 +215,13 @@ export default function LessonPage() {
                   <p className="text-slate-400">لا توجد أسئلة لهذا الدرس</p>
                 </div>
               ) : quizDone ? (
-                /* Result */
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center">
                   <div className="text-6xl mb-4">
                     {pct >= 80 ? '🏆' : pct >= 50 ? '⭐' : '📚'}
                   </div>
-                  <h2 className="font-amiri text-3xl font-bold text-white mb-2">
-                    انتهى الاختبار!
-                  </h2>
-                  <p className="text-slate-400 mb-6">
-                    أجبت على {score} من {quizzes.length} بشكل صحيح
-                  </p>
+                  <h2 className="font-amiri text-3xl font-bold text-white mb-2">انتهى الاختبار!</h2>
+                  <p className="text-slate-400 mb-6">أجبت على {score} من {quizzes.length} بشكل صحيح</p>
 
-                  {/* Score circle */}
                   <div className="w-28 h-28 mx-auto mb-6 relative">
                     <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
                       <circle cx="50" cy="50" r="42" fill="none" stroke="#1e293b" strokeWidth="10" />
@@ -285,9 +249,7 @@ export default function LessonPage() {
                   </button>
                 </div>
               ) : (
-                /* Question */
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                  {/* Progress */}
                   <div className="flex items-center justify-between text-sm text-slate-400 mb-3">
                     <span>السؤال {current + 1} من {quizzes.length}</span>
                     <span className="text-indigo-400 font-bold">{score} ✓</span>
@@ -299,12 +261,10 @@ export default function LessonPage() {
                     />
                   </div>
 
-                  {/* Question */}
                   <h3 className="font-amiri text-xl font-bold text-white mb-6 leading-relaxed">
                     {quizzes[current].question}
                   </h3>
 
-                  {/* Options */}
                   <div className="space-y-3 mb-6">
                     {quizzes[current].options.map((opt, i) => {
                       const isSelected = selected === opt;
@@ -328,7 +288,6 @@ export default function LessonPage() {
                     })}
                   </div>
 
-                  {/* Feedback */}
                   {selected && (
                     <div className={`rounded-xl px-4 py-3 mb-4 text-sm font-semibold ${
                       isCorrect

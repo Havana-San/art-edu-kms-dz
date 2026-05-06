@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Palette, ArrowRight, Plus, Edit, Trash2,
+  Plus, Trash2,
   BookOpen, Eye, EyeOff, GripVertical
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -73,25 +73,6 @@ export default function TeacherCourseDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-
-      {/* NAVBAR */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center">
-              <Palette size={16} className="text-white" />
-            </div>
-            <span className="font-amiri font-bold text-base bg-gradient-to-l from-indigo-400 to-amber-400 bg-clip-text text-transparent">
-              Art Edu KMS DZ
-            </span>
-          </div>
-          <Link href="/dashboard/teacher"
-            className="flex items-center gap-1 text-slate-400 hover:text-slate-200 text-sm transition-colors">
-            <ArrowRight size={16} /> لوحة الأستاذ
-          </Link>
-        </div>
-      </nav>
-
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
 
@@ -115,7 +96,6 @@ export default function TeacherCourseDetailPage() {
                 <p className="text-slate-400 text-sm leading-relaxed">{course.description}</p>
               </div>
 
-              {/* Actions */}
               <div className="flex flex-col gap-2">
                 <button
                   onClick={togglePublish}
@@ -172,23 +152,16 @@ export default function TeacherCourseDetailPage() {
                   className="flex items-center gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-indigo-600/40 transition-all"
                 >
                   <GripVertical size={18} className="text-slate-600 flex-shrink-0" />
-
                   <div className="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center flex-shrink-0 text-indigo-400 font-bold text-sm">
                     {idx + 1}
                   </div>
-
                   <div className="flex-1 min-w-0">
                     <h3 className="text-white font-semibold truncate">{lesson.title}</h3>
                     <div className="flex items-center gap-3 mt-0.5">
-                      {lesson.video_url && (
-                        <span className="text-slate-500 text-xs">📹 فيديو</span>
-                      )}
-                      {lesson.content && (
-                        <span className="text-slate-500 text-xs">📄 نص</span>
-                      )}
+                      {lesson.video_url && <span className="text-slate-500 text-xs">📹 فيديو</span>}
+                      {lesson.content   && <span className="text-slate-500 text-xs">📄 نص</span>}
                     </div>
                   </div>
-
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <Link
                       href={`/courses/${id}/lessons/${lesson.id}`}
