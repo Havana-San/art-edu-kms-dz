@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Palette, Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
-export default function LoginPage() {
-  const router = useRouter();
+function LoginForm() {
+  const router       = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath     = searchParams.get('next') || '';
 
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -32,25 +34,30 @@ export default function LoginPage() {
     }
 
     if (data.user) {
-      // Get user role from profiles table
+      // إذا كان هناك مسار محفوظ قبل طلب تسجيل الدخول → نعود إليه
+      if (nextPath && nextPath.startsWith('/')) {
+        router.push(nextPath);
+        return;
+      }
+
+      // وإلا نوجّه حسب الدور
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .single();
 
-      if (profile?.role === 'teacher') {
-        router.push('/dashboard/teacher');
-      } else {
-        router.push('/dashboard/student');
-      }
+      router.push(
+        profile?.role === 'teacher'
+          ? '/dashboard/teacher'
+          : '/dashboard/student'
+      );
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
 
-      {/* Background glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
@@ -68,18 +75,22 @@ export default function LoginPage() {
           <h1 className="font-amiri text-3xl font-bold text-white mb-2">
             أهلاً بعودتك
           </h1>
-          <p className="text-slate-400">
-            سجّل دخولك للمتابعة
-          </p>
+          <p className="text-slate-400">سجّل دخولك للمتابعة</p>
         </div>
 
         {/* Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
 
-          {/* Error message */}
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm mb-6 text-center">
               {error}
+            </div>
+          )}
+
+          {/* رسالة إذا كان قادماً من صفحة محمية */}
+          {nextPath && (
+            <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl px-4 py-3 text-indigo-400 text-sm mb-6 text-center">
+              سجّل دخولك للوصول إلى المحتوى المطلوب
             </div>
           )}
 
@@ -91,10 +102,7 @@ export default function LoginPage() {
                 البريد الإلكتروني
               </label>
               <div className="relative">
-                <Mail
-                  size={18}
-                  className="absolute top-1/2 -translate-y-1/2 right-4 text-slate-400"
-                />
+                <Mail size={18} className="absolute top-1/2 -translate-y-1/2 right-4 text-slate-400" />
                 <input
                   type="email"
                   value={email}
@@ -112,10 +120,7 @@ export default function LoginPage() {
                 كلمة المرور
               </label>
               <div className="relative">
-                <Lock
-                  size={18}
-                  className="absolute top-1/2 -translate-y-1/2 right-4 text-slate-400"
-                />
+                <Lock size={18} className="absolute top-1/2 -translate-y-1/2 right-4 text-slate-400" />
                 <input
                   type={showPass ? 'text' : 'password'}
                   value={password}
@@ -151,26 +156,20 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-slate-800" />
             <span className="text-slate-500 text-sm">أو</span>
             <div className="flex-1 h-px bg-slate-800" />
           </div>
 
-          {/* Register link */}
           <p className="text-center text-slate-400 text-sm">
             ليس لديك حساب؟{' '}
-            <Link
-              href="/register"
-              className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
-            >
+            <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
               سجّل الآن مجاناً
             </Link>
           </p>
         </div>
 
-        {/* Back to home */}
         <p className="text-center text-slate-500 text-sm mt-6">
           <Link href="/" className="hover:text-slate-300 transition-colors">
             ← العودة للصفحة الرئيسية
@@ -178,5 +177,18 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// useSearchParams يحتاج Suspense في Next.js 14
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
