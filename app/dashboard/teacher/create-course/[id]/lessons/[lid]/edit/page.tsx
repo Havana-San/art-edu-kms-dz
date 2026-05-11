@@ -3,57 +3,59 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Save, Video, FileText } from 'lucide-react';
+import { Edit, Save, Video, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
-export default function AddLessonPage() {
-  const { id }  = useParams<{ id: string }>();
-  const router  = useRouter();
+export default function EditLessonPage() {
+  const { id, lid } = useParams<{ id: string; lid: string }>();
+  const router = useRouter();
 
   const [title,    setTitle]    = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [content,  setContent]  = useState('');
-  const [order,    setOrder]    = useState(1);
   const [loading,  setLoading]  = useState(true);
   const [saving,   setSaving]   = useState(false);
   const [error,    setError]    = useState('');
+  const [success,  setSuccess]  = useState(false);
 
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push('/login'); return; }
 
-      const { count } = await supabase
-        .from('lessons')
-        .select('*', { count: 'exact', head: true })
-        .eq('course_id', id);
+      const { data } = await supabase
+        .from('lessons').select('*').eq('id', lid).single();
+      if (!data) { router.push(`/dashboard/teacher/courses/${id}`); return; }
 
-      setOrder((count || 0) + 1);
+      setTitle(data.title || '');
+      setVideoUrl(data.video_url || '');
+      setContent(data.content || '');
       setLoading(false);
     };
     init();
-  }, [id, router]);
+  }, [id, lid, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) { setError('عنوان الدرس مطلوب'); return; }
-    setSaving(true); setError('');
+    setSaving(true); setError(''); setSuccess(false);
 
-    const { error: err } = await supabase.from('lessons').insert({
-      course_id: id,
-      title:     title.trim(),
-      video_url: videoUrl.trim() || null,
-      content:   content.trim()  || null,
-      order,
-    });
+    const { error: err } = await supabase
+      .from('lessons')
+      .update({
+        title:     title.trim(),
+        video_url: videoUrl.trim() || null,
+        content:   content.trim()  || null,
+      })
+      .eq('id', lid);
 
     if (err) {
       setError('حدث خطأ أثناء الحفظ، يرجى المحاولة مجدداً');
-      setSaving(false);
-      return;
+    } else {
+      setSuccess(true);
+      setTimeout(() => router.push(`/dashboard/teacher/courses/${id}`), 1000);
     }
-
-    router.push(`/dashboard/teacher/courses/${id}`);
+    setSaving(false);
   };
 
   if (loading) return (
@@ -69,15 +71,12 @@ export default function AddLessonPage() {
 
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center">
-                <BookOpen size={20} className="text-indigo-400" />
+              <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
+                <Edit size={20} className="text-amber-400" />
               </div>
-              <div>
-                <h1 className="font-amiri text-3xl font-bold text-white">إضافة درس جديد</h1>
-                <p className="text-slate-500 text-sm">الترتيب التلقائي: درس {order}</p>
-              </div>
+              <h1 className="font-amiri text-3xl font-bold text-white">تعديل الدرس</h1>
             </div>
-            <p className="text-slate-400">أضف عنوان الدرس ومحتواه (فيديو أو نص أو كلاهما)</p>
+            <p className="text-slate-400">عدّل محتوى الدرس ثم انقر حفظ</p>
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
@@ -85,6 +84,11 @@ export default function AddLessonPage() {
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm mb-6 text-center">
                 {error}
+              </div>
+            )}
+            {success && (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-emerald-400 text-sm mb-6 text-center">
+                ✅ تم الحفظ بنجاح، جاري التحويل...
               </div>
             )}
 
@@ -98,9 +102,8 @@ export default function AddLessonPage() {
                   type="text"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  placeholder="مثال: مقدمة في نظرية الألوان"
                   required
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-right"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all text-right"
                 />
               </div>
 
@@ -116,10 +119,9 @@ export default function AddLessonPage() {
                   value={videoUrl}
                   onChange={e => setVideoUrl(e.target.value)}
                   placeholder="https://www.youtube.com/watch?v=..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                   dir="ltr"
                 />
-                <p className="text-slate-500 text-xs mt-1 text-right">يدعم روابط YouTube</p>
               </div>
 
               <div>
@@ -132,9 +134,8 @@ export default function AddLessonPage() {
                 <textarea
                   value={content}
                   onChange={e => setContent(e.target.value)}
-                  placeholder="اكتب شرح الدرس هنا..."
-                  rows={6}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-right resize-none"
+                  rows={8}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all text-right resize-none"
                 />
               </div>
 
@@ -142,12 +143,12 @@ export default function AddLessonPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all active:scale-95"
+                  className="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-900 font-bold py-3 rounded-xl transition-all active:scale-95"
                 >
                   {saving ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" />
                   ) : (
-                    <><Save size={18} /> إضافة الدرس</>
+                    <><Save size={18} /> حفظ التعديلات</>
                   )}
                 </button>
                 <Link

@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Plus, Trash2,
-  BookOpen, Eye, EyeOff, GripVertical
+  Plus, Trash2, Edit,
+  BookOpen, Eye, EyeOff, GripVertical, HelpCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -75,7 +75,7 @@ export default function TeacherCourseDetailPage() {
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
 
-          {/* Course header card */}
+          {/* ── Course header ── */}
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-7 mb-6">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div className="flex-1">
@@ -110,6 +110,13 @@ export default function TeacherCourseDetailPage() {
                 </button>
 
                 <Link
+                  href={`/dashboard/teacher/courses/${id}/edit`}
+                  className="flex items-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-amber-500/30"
+                >
+                  <Edit size={15} /> تعديل الكورس
+                </Link>
+
+                <Link
                   href={`/courses/${course.id}`}
                   className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-700"
                 >
@@ -119,7 +126,7 @@ export default function TeacherCourseDetailPage() {
             </div>
           </div>
 
-          {/* Lessons section */}
+          {/* ── Lessons ── */}
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-amiri text-2xl font-bold text-white">
               الدروس ({lessons.length})
@@ -151,9 +158,11 @@ export default function TeacherCourseDetailPage() {
                   className="flex items-center gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-indigo-600/40 transition-all"
                 >
                   <GripVertical size={18} className="text-slate-600 flex-shrink-0" />
+
                   <div className="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center flex-shrink-0 text-indigo-400 font-bold text-sm">
                     {idx + 1}
                   </div>
+
                   <div className="flex-1 min-w-0">
                     <h3 className="text-white font-semibold truncate">{lesson.title}</h3>
                     <div className="flex items-center gap-3 mt-0.5">
@@ -161,13 +170,28 @@ export default function TeacherCourseDetailPage() {
                       {lesson.content   && <span className="text-slate-500 text-xs">📄 نص</span>}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+
+                  <div className="flex items-center gap-1 flex-shrink-0">
                     <Link
                       href={`/courses/${id}/lessons/${lesson.id}`}
                       className="p-2 text-slate-400 hover:text-indigo-400 transition-colors"
                       title="معاينة"
                     >
                       <Eye size={16} />
+                    </Link>
+                    <Link
+                      href={`/dashboard/teacher/courses/${id}/lessons/${lesson.id}/edit`}
+                      className="p-2 text-slate-400 hover:text-amber-400 transition-colors"
+                      title="تعديل الدرس"
+                    >
+                      <Edit size={16} />
+                    </Link>
+                    <Link
+                      href={`/dashboard/teacher/courses/${id}/lessons/${lesson.id}/quiz`}
+                      className="p-2 text-slate-400 hover:text-emerald-400 transition-colors"
+                      title="أسئلة الاختبار"
+                    >
+                      <HelpCircle size={16} />
                     </Link>
                     <button
                       onClick={() => deleteLesson(lesson.id)}
